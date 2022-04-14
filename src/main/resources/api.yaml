@@ -82,7 +82,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/Response'
         - properties:
-            document:
+            match:
               type: boolean
               example: true
               description: "Whether the user is matched with the swiped user"
