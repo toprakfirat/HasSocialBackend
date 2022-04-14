@@ -1,0 +1,178 @@
+openapi: 3.0.0
+info:
+  title: API Customer
+  version: "1.0"
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+
+  /profile:
+    get:
+      summary: Profile
+      operationId: getProfile
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
+  /swipe:
+    post:
+      summary: Swipe
+      operationId: swipe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SwipeRequest'
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SwipeResponse'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
+components:
+  schemas:
+
+    ProfileResponse:
+      type: object
+      required:
+        - user
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - properties:
+            user:
+              $ref: '#/components/schemas/BaseUser'
+
+    SwipeRequest:
+      type: object
+      required:
+        - destinationId
+        - swipeType
+      properties:
+        destinationId:
+          type: number
+          description: "ID of Swiped User"
+          example: 1000
+        swipeType:
+          $ref: '#/components/schemas/SwipeType'
+
+    SwipeResponse:
+      type: object
+      required:
+        -  match
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - properties:
+            document:
+              type: boolean
+              example: true
+              description: "Whether the user is matched with the swiped user"
+
+    Response:
+      type: object
+      required:
+        - result
+      properties:
+        result:
+          $ref: '#/components/schemas/Result'
+      discriminator:
+        propertyName: responseType
+
+    ExceptionResponse:
+      type: object
+      required:
+        - result
+      properties:
+        timestamp:
+          type: string
+          pattern: "DD-MM-YYYY HH:MI:SS"
+          example: 26-03-2020 14:28:27
+        result:
+          $ref: '#/components/schemas/Result'
+        error:
+          $ref: '#/components/schemas/Error'
+        showCaptcha:
+          type: boolean
+
+    BaseUser:
+      type: object
+      required:
+        - userId
+        - name
+        - surname
+        - age
+        - email
+        - avatar
+        - interests
+      properties:
+        accountNumber:
+          type: string
+          description: "Account number"
+          example: "9159-3012-352"
+        branchName:
+          type: string
+          description: "Branch name of the account"
+          example: "Fulya"
+        branchCode:
+          type: string
+          description: "Branch code of the account"
+          example: "9159"
+        ibanNo:
+          type: string
+          description: "IBAN number"
+          example: "TR53 0014 1000 0000 0301 2000 01"
+      discriminator:
+        propertyName: accountType
+
+    Error:
+      type: object
+      properties:
+        errorID:
+          type: integer
+          format: int32
+          description: Unique ID of the error message
+          example: 300041
+        errorMessage:
+          type: string
+          description: Description of the error message
+          example: Incorrect Login, Password.
+        errorType:
+          $ref: '#/components/schemas/ErrorType'
+
+    ErrorType:
+      type: string
+      enum:
+        - BACKEND_ERROR
+        - AUTHENTICATION_ERROR
+        - GENERAL_ERROR
+
+    SwipeType:
+      type: string
+      enum:
+        - RIGHT
+        - LEFT
+
+    Result:
+      type: string
+      enum:
+        - OK
+        - ERROR
