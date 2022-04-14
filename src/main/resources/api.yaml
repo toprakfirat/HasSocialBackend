@@ -65,10 +65,10 @@ components:
     SwipeRequest:
       type: object
       required:
-        - destinationId
+        - targetId
         - swipeType
       properties:
-        destinationId:
+        targetId:
           type: number
           description: "ID of Swiped User"
           example: 1000

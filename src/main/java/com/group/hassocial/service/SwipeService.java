@@ -19,7 +19,6 @@ public class SwipeService {
         SwipeResponse swipeResponse = new SwipeResponse();
         swipeResponse.setMatch(false);
         swipeResponse.setResult(Result.OK);
-        //RESPONSEU YARAT
 
         return swipeResponse;
     }

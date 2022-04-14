@@ -21,7 +21,6 @@ public class SwipeController implements SwipeApi {
     public ResponseEntity<SwipeResponse> swipe(@Valid SwipeRequest swipeRequest) {
 
         final SwipeResponse swipeResponse = swipeService.swipe(swipeRequest);
-        //SERVICE RESPONSEU RESPONSE ENTITY'E CEVIR RETURN ET
 
         //TODO Figure Out Response Entities
         return new ResponseEntity<>(
