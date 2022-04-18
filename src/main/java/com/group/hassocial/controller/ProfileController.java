@@ -1,5 +1,6 @@
 package com.group.hassocial.controller;
 
+import com.group.hassocial.repository.UserRepository;
 import com.hassocial.swaggergen.controller.ProfileApi;
 import com.hassocial.swaggergen.model.ProfileResponse;
 import org.springframework.http.ResponseEntity;
