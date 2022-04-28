@@ -117,31 +117,31 @@ components:
       type: object
       required:
         - userId
-        - name
-        - surname
-        - age
+        - fullName
         - email
-        - avatar
-        - interests
+        - birthDate
+        - avatarImageId
+        - isVerified
       properties:
-        accountNumber:
+        userId:
+          type: integer
+          description: "User's Id"
+          example: "4921"
+        fullName:
           type: string
-          description: "Account number"
-          example: "9159-3012-352"
-        branchName:
+          description: "User's name"
+          example: "Mehmet Yilmaz"
+        email:
           type: string
-          description: "Branch name of the account"
-          example: "Fulya"
-        branchCode:
+          description: "User's email"
+          example: "mehmetyilmaz@stu.khas.edu.tr"
+        birthDate:
           type: string
-          description: "Branch code of the account"
-          example: "9159"
-        ibanNo:
+          format: date
+        avatarImageId:
           type: string
-          description: "IBAN number"
-          example: "TR53 0014 1000 0000 0301 2000 01"
-      discriminator:
-        propertyName: accountType
+        isVerified:
+          type: boolean
 
     Error:
       type: object
