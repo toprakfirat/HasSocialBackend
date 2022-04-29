@@ -1,27 +1,49 @@
-package com.group.hassocial.model;
+package com.group.hassocial.data.model;
 
 import lombok.*;
-import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+
 @Entity
 @Table(name = "USERS")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Setter
+@Getter
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private int UserID;
 
+    @Column
     private String FullName;
+
+    @Column
     private String Email;
+
+    @Basic
+    @Temporal(TemporalType.DATE)
+    @Column
     private Date BirthDate;
+
+    @Column
     private String AvatarImageID;
+
+    @Column
     private boolean IsVerified;
-    private DateTime CreateDate;
-    private byte PasswordHash;
+
+    @Basic
+    @Temporal(TemporalType.DATE)
+    @Column
+    private Date CreateDate;
+
+    @Column
+    private String PasswordHash;
+
+    @Column
+    private String ActivationToken;
 }
