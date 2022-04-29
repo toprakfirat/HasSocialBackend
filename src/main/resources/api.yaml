@@ -56,11 +56,16 @@ components:
       type: object
       required:
         - user
+        - interests
       allOf:
         - $ref: '#/components/schemas/Response'
         - properties:
             user:
               $ref: '#/components/schemas/BaseUser'
+            interests:
+              type: array
+              items:
+                $ref: '#/components/schemas/BaseInterest'
 
     SwipeRequest:
       type: object
@@ -142,6 +147,19 @@ components:
           type: string
         isVerified:
           type: boolean
+
+    BaseInterest:
+      type: object
+      required:
+        - interestId
+        - interestName
+      properties:
+        interestId:
+          type: integer
+          description: "Interest's ID"
+        interestName:
+          type: string
+          description: "Interest's name"
 
     Error:
       type: object
