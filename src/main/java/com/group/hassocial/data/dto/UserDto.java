@@ -1,12 +1,20 @@
 package com.group.hassocial.data.dto;
 
 import com.sun.istack.NotNull;
+import lombok.*;
 import org.joda.time.DateTime;
 
 import javax.validation.constraints.NotEmpty;
+import java.io.Serializable;
 import java.util.Date;
 
-public class UserDto {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+
+public class UserDto implements Serializable {
     @NotNull
     @NotEmpty
     private String fullName;
@@ -17,7 +25,7 @@ public class UserDto {
 
     @NotNull
     @NotEmpty
-    private byte passwordHash;
+    private String password;
     private String matchingPassword;
 
     private int userId;

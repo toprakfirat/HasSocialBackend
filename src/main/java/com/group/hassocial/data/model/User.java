@@ -1,19 +1,21 @@
 package com.group.hassocial.data.model;
-
 import lombok.*;
-
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name = "USERS")
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
-public class User implements Serializable {
+public class User {
+
+    public User() {
+        super();
+        this.IsVerified=false;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column

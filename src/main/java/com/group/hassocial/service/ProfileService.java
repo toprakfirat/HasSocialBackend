@@ -1,6 +1,6 @@
 package com.group.hassocial.service;
 
-import com.group.hassocial.model.dto.UserDto;
+import com.group.hassocial.data.dto.UserDto;
 import com.group.hassocial.repository.UserRepository;
 import com.hassocial.swaggergen.model.BaseUser;
 import com.hassocial.swaggergen.model.ProfileResponse;
