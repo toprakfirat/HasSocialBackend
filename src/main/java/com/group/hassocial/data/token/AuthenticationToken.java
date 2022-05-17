@@ -1,5 +1,4 @@
 package com.group.hassocial.data.token;
-
 import com.group.hassocial.data.model.User;
 import lombok.*;
 
@@ -31,17 +30,9 @@ public class AuthenticationToken {
     private LocalDateTime confirmedAt;
 
     @ManyToOne
-    @JoinColumn(nullable = false,
-            name = "UserID")
-        private User user;
+    @JoinColumn(nullable = false, name = "UserID", table = "USERS")
+    private User user;
 
     public AuthenticationToken() {
-    }
-
-    public AuthenticationToken(String token, LocalDateTime createdAt, LocalDateTime expiresAt, User user) {
-        this.token = token;
-        this.createdAt = createdAt;
-        this.expiresAt = expiresAt;
-        this.user = user;
     }
 }

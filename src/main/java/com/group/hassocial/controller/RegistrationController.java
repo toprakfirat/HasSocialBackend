@@ -4,7 +4,6 @@ import com.group.hassocial.exception.InvalidEmailDomainException;
 import com.group.hassocial.exception.UserAlreadyExistException;
 import com.group.hassocial.service.RegistrationService;
 import io.swagger.annotations.Api;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +26,7 @@ public class RegistrationController {
     public ResponseEntity<String> register(@RequestBody @Valid UserDto userDto) throws UserAlreadyExistException,
             InvalidEmailDomainException {
          registrationService.register(userDto);
-         return ResponseEntity.ok("User is verified, ready for signup process.");
+         return ResponseEntity.ok("User is registered half the way. Authentication email is sent!");
     }
 
     @GetMapping("/authenticate")
@@ -36,7 +35,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/signup")
-    public String signup() {
+    public String signup(@RequestBody UserDto userDto) {
         return "";
     }
 }

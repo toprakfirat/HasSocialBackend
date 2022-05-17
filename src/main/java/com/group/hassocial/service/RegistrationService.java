@@ -10,6 +10,7 @@ import com.group.hassocial.repository.UserRepository;
 import com.group.hassocial.security.EmailValidator;
 import com.group.hassocial.service.interfaces.IRegistrationService;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -24,6 +25,9 @@ public class RegistrationService implements IRegistrationService {
     private final AuthenticationTokenService authenticationTokenService;
     private final EmailSender emailSender;
     private final EmailValidator emailValidator;
+
+    @Value("${authentication.link}")
+    private String authenticationLink;
 
     public RegistrationService(EmailSender emailSender, UserRepository userRepository, AuthenticationTokenRepository authenticationTokenRepository,
                                AuthenticationTokenService authenticationTokenService, EmailValidator emailValidator) {
@@ -42,10 +46,11 @@ public class RegistrationService implements IRegistrationService {
             User notAuthenticatedUser = userRepository.findByEmail(userDto.getEmail()).get();
 
             if (!notAuthenticatedUser.isIsVerified()) {
-                String token = UUID.randomUUID().toString();
-                saveAuthenticationToken(notAuthenticatedUser, token);
+                String newToken = UUID.randomUUID().toString();
+                saveAuthenticationToken(notAuthenticatedUser, newToken);
+                emailSender.sendEmail(userDto.getEmail(), emailSender.buildEmail(notAuthenticatedUser.getFullName(), authenticationLink + newToken));
 
-                return token;
+                return newToken;
             }
             throw new UserAlreadyExistException("User already exists for this email");
         }
@@ -54,7 +59,6 @@ public class RegistrationService implements IRegistrationService {
             throw new InvalidEmailDomainException("Email : %s is not a valid mail!", userDto.getEmail());
         }
 
-
         var user = User.builder().Email(userDto.getEmail()).build();
         encodePassword(user, userDto); // encodes user password using hash function
         userRepository.save(user);
@@ -62,8 +66,7 @@ public class RegistrationService implements IRegistrationService {
         String token = UUID.randomUUID().toString();
         saveAuthenticationToken(user, token);
 
-        String link = "http://localhost:8080/api/user/authenticate?token=" + token;
-        emailSender.sendEmail(userDto.getEmail(), emailSender.buildEmail(userDto.getFullName(), link));
+        emailSender.sendEmail(userDto.getEmail(), emailSender.buildEmail(userDto.getFullName(), authenticationLink + token));
         return token;
     }
 
@@ -83,8 +86,11 @@ public class RegistrationService implements IRegistrationService {
     }
 
     private void saveAuthenticationToken(User user, String token) {
-        AuthenticationToken authenticationToken = new AuthenticationToken(token, LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15), user);
+        AuthenticationToken authenticationToken = AuthenticationToken.builder()
+                .token(token)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(60))
+                .user(user).build();
         authenticationTokenService.saveAuthenticationToken(authenticationToken);
     }
 
@@ -99,17 +105,14 @@ public class RegistrationService implements IRegistrationService {
         if (confirmToken.isEmpty()) {
             throw new IllegalStateException("Token not found!");
         }
-
         if (confirmToken.get().getConfirmedAt() != null) {
             throw new IllegalStateException("Email is already confirmed!");
         }
-
         LocalDateTime expiresAt = confirmToken.get().getExpiresAt();
 
         if (expiresAt.isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("Token is already expired!");
         }
-
         authenticationTokenService.setAuthenticationTime(token);
         makeUserVerified(confirmToken.get().getUser().getEmail());
 
