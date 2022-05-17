@@ -8,12 +8,16 @@ import com.group.hassocial.exception.UserAlreadyExistException;
 import com.group.hassocial.repository.AuthenticationTokenRepository;
 import com.group.hassocial.repository.UserRepository;
 import com.group.hassocial.security.EmailValidator;
+import com.group.hassocial.security.PasswordEncoder;
 import com.group.hassocial.service.interfaces.IRegistrationService;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,7 +25,7 @@ import java.util.UUID;
 public class RegistrationService implements IRegistrationService {
 
     private final UserRepository userRepository;
-    private final AuthenticationTokenRepository authenticationTokenRepository;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationTokenService authenticationTokenService;
     private final EmailSender emailSender;
     private final EmailValidator emailValidator;
@@ -29,25 +33,25 @@ public class RegistrationService implements IRegistrationService {
     @Value("${authentication.link}")
     private String authenticationLink;
 
-    public RegistrationService(EmailSender emailSender, UserRepository userRepository, AuthenticationTokenRepository authenticationTokenRepository,
+    public RegistrationService(EmailSender emailSender, UserRepository userRepository, PasswordEncoder passwordEncoder,
                                AuthenticationTokenService authenticationTokenService, EmailValidator emailValidator) {
         this.emailSender = emailSender;
         this.userRepository = userRepository;
-        this.authenticationTokenRepository = authenticationTokenRepository;
+        this.passwordEncoder = passwordEncoder;
         this.authenticationTokenService = authenticationTokenService;
         this.emailValidator = emailValidator;
     }
 
 
     @Override
-    public String register(UserDto userDto) throws UserAlreadyExistException, InvalidEmailDomainException {
+    public String register(UserDto userDto) throws UserAlreadyExistException, InvalidEmailDomainException, ParseException {
         if (checkIfUserExist(userDto.getEmail()) && userRepository.findByEmail(userDto.getEmail()).isPresent()) {
 
             User notAuthenticatedUser = userRepository.findByEmail(userDto.getEmail()).get();
 
             if (!notAuthenticatedUser.isIsVerified()) {
                 String newToken = UUID.randomUUID().toString();
-                saveAuthenticationToken(notAuthenticatedUser, newToken);
+                authenticationTokenService.saveAuthenticationToken(notAuthenticatedUser, newToken);
                 emailSender.sendEmail(userDto.getEmail(), emailSender.buildEmail(notAuthenticatedUser.getFullName(), authenticationLink + newToken));
 
                 return newToken;
@@ -55,16 +59,20 @@ public class RegistrationService implements IRegistrationService {
             throw new UserAlreadyExistException("User already exists for this email");
         }
 
-        if (!checkIfUniversityEmail(userDto.getEmail()) || emailValidator.test(userDto.getEmail())) {
+        if (!emailValidator.checkIfUniversityEmail(userDto.getEmail())) {
             throw new InvalidEmailDomainException("Email : %s is not a valid mail!", userDto.getEmail());
         }
-
-        var user = User.builder().Email(userDto.getEmail()).build();
-        encodePassword(user, userDto); // encodes user password using hash function
-        userRepository.save(user);
+        var user = User.builder()
+                .Email(userDto.getEmail())
+                .PasswordHash(passwordEncoder.encodePassword(userDto))
+                .FullName(userDto.getFullName())
+                .BirthDate(User.datePatternOrganizer("2000/01/24"))
+                .CreateDate(User.datePatternOrganizer("2022/05/18"))
+                .build();
+            userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
-        saveAuthenticationToken(user, token);
+        authenticationTokenService.saveAuthenticationToken(user, token);
 
         emailSender.sendEmail(userDto.getEmail(), emailSender.buildEmail(userDto.getFullName(), authenticationLink + token));
         return token;
@@ -73,25 +81,6 @@ public class RegistrationService implements IRegistrationService {
     @Override
     public boolean checkIfUserExist(String email) {
         return userRepository.findByEmail(email).isPresent();
-    }
-
-    @Override
-    public void encodePassword(User user, UserDto userDto) {
-        User.builder().PasswordHash(DigestUtils.sha256Hex(userDto.getPassword()));
-    }
-
-    @Override
-    public boolean checkIfUniversityEmail(String email) {
-        return universityDomains.checksIfDomainIsValid(email.split("@")[1]);
-    }
-
-    private void saveAuthenticationToken(User user, String token) {
-        AuthenticationToken authenticationToken = AuthenticationToken.builder()
-                .token(token)
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusMinutes(60))
-                .user(user).build();
-        authenticationTokenService.saveAuthenticationToken(authenticationToken);
     }
 
     public void makeUserVerified(String email) {
@@ -116,7 +105,6 @@ public class RegistrationService implements IRegistrationService {
         authenticationTokenService.setAuthenticationTime(token);
         makeUserVerified(confirmToken.get().getUser().getEmail());
 
-        //Returning confirmation message if the token matches
         return String.format("Hey %s, your email is authenticated", confirmToken.get().getUser().getFullName());
     }
 }

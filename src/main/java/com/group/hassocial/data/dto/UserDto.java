@@ -26,7 +26,6 @@ public class UserDto implements Serializable {
     @NotNull
     @NotEmpty
     private String password;
-    private String matchingPassword;
 
     private int userId;
 

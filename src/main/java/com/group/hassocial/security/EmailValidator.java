@@ -1,15 +1,21 @@
 package com.group.hassocial.security;
 
+import com.group.hassocial.data.dto.enums.universityDomains;
 import org.springframework.stereotype.Service;
-import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 @Service
-public class EmailValidator implements Predicate<String>{
+public class EmailValidator{
 
-    private final String EMAIL_PATTERN = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+    private final static String EMAIL_PATTERN = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 
-    @Override
-    public boolean test(String email) {
-        return email.matches(EMAIL_PATTERN);
+    public boolean validateEmail(String email) {
+        return Pattern.compile(EMAIL_PATTERN)
+                .matcher(email)
+                .matches();
+    }
+
+    public boolean checkIfUniversityEmail(String email) {
+        return universityDomains.checksIfDomainIsValid(email.split("@")[1]);
     }
 }

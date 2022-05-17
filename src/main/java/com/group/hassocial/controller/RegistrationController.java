@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 
 
 @Api(value = "User Registration Rest Controller")
@@ -24,7 +25,7 @@ public class RegistrationController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid UserDto userDto) throws UserAlreadyExistException,
-            InvalidEmailDomainException {
+            InvalidEmailDomainException, ParseException {
          registrationService.register(userDto);
          return ResponseEntity.ok("User is registered half the way. Authentication email is sent!");
     }
@@ -37,5 +38,10 @@ public class RegistrationController {
     @PostMapping("/signup")
     public String signup(@RequestBody UserDto userDto) {
         return "";
+    }
+
+    @GetMapping("/test")
+    public String getTest() {
+        return "Test!";
     }
 }

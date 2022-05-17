@@ -1,5 +1,6 @@
 package com.group.hassocial.service;
 
+import com.group.hassocial.data.model.User;
 import com.group.hassocial.data.token.AuthenticationToken;
 import com.group.hassocial.repository.AuthenticationTokenRepository;
 import com.group.hassocial.service.interfaces.IAuthenticationService;
@@ -18,7 +19,12 @@ public class AuthenticationTokenService implements IAuthenticationService {
     }
 
     @Override
-    public void saveAuthenticationToken(AuthenticationToken authenticationToken) {
+    public void saveAuthenticationToken(User user,  String token) {
+        AuthenticationToken authenticationToken = AuthenticationToken.builder()
+                .token(token)
+                .createdAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusMinutes(60))
+                .user(user).build();
         authenticationTokenRepository.save(authenticationToken);
     }
 

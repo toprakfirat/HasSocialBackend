@@ -29,7 +29,7 @@ public class AuthenticationToken {
 
     private LocalDateTime confirmedAt;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(nullable = false, name = "UserID")
     private User user;
 

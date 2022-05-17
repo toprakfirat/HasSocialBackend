@@ -15,8 +15,8 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface UserRepository extends JpaRepository<User, Integer>{
 
-    @Query(value = "SELECT u FROM USERS u WHERE u.Email=:email", nativeQuery = true)
-    Optional<User> findByEmail(@Param("email") String email);
+    @Query(value = "SELECT * FROM USERS u WHERE u.Email = ?1", nativeQuery = true)
+    Optional<User> findByEmail(String email);
 
     @Transactional
     @Modifying
