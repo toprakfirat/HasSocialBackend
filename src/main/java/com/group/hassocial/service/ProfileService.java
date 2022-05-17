@@ -1,5 +1,7 @@
 package com.group.hassocial.service;
 
+import com.group.hassocial.data.dto.UserDto;
+
 import com.group.hassocial.repository.UserRepository;
 
 import com.group.hassocial.util.ModelMapperUtil;
