@@ -1,10 +1,7 @@
 package com.group.hassocial.service;
 
-import com.group.hassocial.data.dto.UserDto;
-
 import com.group.hassocial.repository.UserRepository;
-
-import com.group.hassocial.util.ModelMapperUtil;
+import com.group.hassocial.util.UserUtil;
 import com.hassocial.swaggergen.model.BaseUser;
 import com.hassocial.swaggergen.model.ChangeSettingsRequest;
 import com.hassocial.swaggergen.model.ProfileResponse;
@@ -20,7 +17,7 @@ public class ProfileService {
     private UserRepository userRepository;
 
     @Autowired
-    private ModelMapperUtil modelMapperUtil;
+    private UserUtil userUtil;
 
     @Autowired
     private InterestsService interestsService;
@@ -30,9 +27,9 @@ public class ProfileService {
         final ProfileResponse profileResponse = new ProfileResponse();
 
         //TODO Get UserId from session constant after it's implementation
-        final int id = 0;
+        final int id = 1;
 
-        final BaseUser user = modelMapperUtil.modelMapper.map(userRepository.findById(id).get(), BaseUser.class);
+        final BaseUser user = userUtil.userToBaseUser(userRepository.findById(id).get());
 
         profileResponse.setResult(Result.OK);
         profileResponse.setUser(user);
@@ -45,8 +42,7 @@ public class ProfileService {
 
         //TODO Get UserId from session constant after it's implementation
         final int id = 0;
-
-        final BaseUser user = modelMapperUtil.modelMapper.map(userRepository.findById(id).get(), BaseUser.class);
+        final BaseUser user = userUtil.userToBaseUser(userRepository.findById(id).get());
 
         return null;
 
