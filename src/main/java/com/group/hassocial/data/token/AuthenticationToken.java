@@ -16,7 +16,7 @@ public class AuthenticationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int AuthenticationID;
 
     @Column(nullable = false)
     private String token;

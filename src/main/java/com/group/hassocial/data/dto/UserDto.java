@@ -36,4 +36,6 @@ public class UserDto implements Serializable {
     private boolean isVerified;
 
     private DateTime createDate;
+
+    private boolean Gender;
 }
