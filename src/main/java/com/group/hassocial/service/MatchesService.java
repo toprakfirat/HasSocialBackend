@@ -1,8 +1,9 @@
 package com.group.hassocial.service;
 
 import com.group.hassocial.data.model.User;
-import com.group.hassocial.repository.UserRepository;
-import com.group.hassocial.util.ModelMapperUtil;
+import com.group.hassocial.service.Matches.MatchAlgorithmService;
+import com.group.hassocial.util.UserUtil;
+import com.hassocial.swaggergen.model.BaseUser;
 import com.hassocial.swaggergen.model.MatchesResponse;
 import com.hassocial.swaggergen.model.Result;
 import com.hassocial.swaggergen.model.SwipeRequest;
@@ -17,19 +18,20 @@ import java.util.List;
 public class MatchesService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserUtil userUtil;
 
     @Autowired
-    private ModelMapperUtil modelMapperUtil;
+    private MatchAlgorithmService matchAlgorithmService;
 
     public MatchesResponse getMatches() {
 
         final MatchesResponse matchesResponse = new MatchesResponse();
-        //TODO Get UserId from session constant after it's implementation
-        final int id = 1;
-        final boolean gender = false;
-        final List<User> users = userRepository.findMatches(id, gender).get();
-        return null;
+        final List<BaseUser> users = matchAlgorithmService.matchAlgorithm();
+
+        matchesResponse.setUsers(users);
+        matchesResponse.setResult(Result.OK);
+
+        return matchesResponse;
     }
 
     public SwipeResponse swipe(@Valid SwipeRequest swipeRequest) {

@@ -125,7 +125,7 @@ components:
             users:
               type: array
               items:
-                type: int
+                $ref: '#/components/schemas/BaseUser'
 
     SwipeRequest:
       type: object
