@@ -62,12 +62,11 @@ public class RegistrationService implements IRegistrationService {
         if (!emailValidator.checkIfUniversityEmail(userDto.getEmail())) {
             throw new InvalidEmailDomainException("Email : %s is not a valid mail!", userDto.getEmail());
         }
-        var user = User.builder()
+        final User user = User.builder()
                 .Email(userDto.getEmail())
                 .PasswordHash(passwordEncoder.encodePassword(userDto))
-                .FullName(userDto.getFullName())
-                .BirthDate(User.datePatternOrganizer("2000/01/24"))
                 .CreateDate(User.datePatternOrganizer("2022/05/18"))
+                .UniversityID(1)
                 .build();
             userRepository.save(user);
 
@@ -91,7 +90,7 @@ public class RegistrationService implements IRegistrationService {
     public String confirmToken(String token) {
         Optional<AuthenticationToken> confirmToken = authenticationTokenService.getToken(token);
 
-        if (confirmToken.isEmpty()) {
+        if (!confirmToken.isPresent()) {
             throw new IllegalStateException("Token not found!");
         }
         if (confirmToken.get().getConfirmedAt() != null) {

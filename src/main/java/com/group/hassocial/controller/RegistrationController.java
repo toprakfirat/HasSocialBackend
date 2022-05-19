@@ -39,9 +39,4 @@ public class RegistrationController {
     public String signup(@RequestBody UserDto userDto) {
         return "";
     }
-
-    @GetMapping("/test")
-    public String getTest() {
-        return "Test!";
-    }
 }

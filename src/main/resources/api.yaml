@@ -26,9 +26,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExceptionResponse'
 
-  /swipe:
+  /profile/change-settings:
     post:
-      summary: Swipe
+      summary: Profile
+      operationId: changeSettings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeSettingsRequest'
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
+  /matches:
+    get:
+      summary: Matches
+      operationId: getMatches
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchesResponse'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
+  /matches/swipe:
+    post:
+      summary: Matches
       operationId: swipe
       requestBody:
         content:
@@ -51,7 +92,6 @@ paths:
 
 components:
   schemas:
-
     ProfileResponse:
       type: object
       required:
@@ -66,6 +106,26 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/BaseInterest'
+
+    ChangeSettingsRequest:
+      type: object
+      required:
+        - user
+      properties:
+        user:
+          $ref: '#/components/schemas/BaseUser'
+
+    MatchesResponse:
+      type: object
+      required:
+        - users
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - properties:
+            users:
+              type: array
+              items:
+                type: int
 
     SwipeRequest:
       type: object

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -24,5 +25,6 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     @Query(value = "UPDATE USERS u SET u.isVerified=true WHERE u.email=:email", nativeQuery = true)
     void verifyUser(@Param("email") String email);
 
-
+    @Query(value = "SELECT * FROM USERS WHERE Gender = ?2 AND UserID not in (SELECT UserID FROM SWIPES WHERE TargetID = ?1) UNION SELECT * FROM USERS WHERE Gender = ?2 AND UserID in (SELECT UserID FROM SWIPES WHERE TargetID = ?1 AND IsAccepted = 1)", nativeQuery = true)
+    Optional<List<User>> findMatches(Integer userID, Boolean gender);
 }
