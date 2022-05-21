@@ -1,2 +1,4 @@
-package com.group.hassocial.repository;public class SwipeRepository {
+package com.group.hassocial.repository;
+
+public interface SwipeRepository {
 }

@@ -1,12 +1,13 @@
 package com.group.hassocial.data.dto.enums;
 
+import com.group.hassocial.repository.UniversityRepository;
 public enum universityDomains {
 
     KHAS("stu.khas.edu.tr"),
-    KOC("ku.edu.tr");
+    KOC("ku.edu.tr"),
+    GMAIL("gmail.com");
 
-
-    private String uniDomain;
+    private final String uniDomain;
 
      universityDomains(String domain) {
         this.uniDomain = domain;
@@ -22,4 +23,5 @@ public enum universityDomains {
         }
         return false;
     }
+
 }

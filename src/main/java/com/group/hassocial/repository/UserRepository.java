@@ -22,8 +22,8 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE USERS u SET u.isVerified=true WHERE u.email=:email", nativeQuery = true)
-    void verifyUser(@Param("email") String email);
+    @Query(value = "UPDATE USERS u SET u.isVerified=true WHERE u.email=?1", nativeQuery = true)
+    void verifyUser(String email);
 
     @Query(value = "SELECT * FROM USERS WHERE Gender = ?2 AND UserID not in (SELECT UserID FROM SWIPES WHERE TargetID = ?1) UNION SELECT * FROM USERS WHERE Gender = ?2 AND UserID in (SELECT UserID FROM SWIPES WHERE TargetID = ?1 AND IsAccepted = 1)", nativeQuery = true)
     Optional<List<User>> findMatches(Integer userID, Boolean gender);

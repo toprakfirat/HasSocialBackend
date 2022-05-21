@@ -1,22 +1,18 @@
-package com.group.hassocial.security;
+package com.group.hassocial.security.config;
 
+import com.group.hassocial.security.PasswordEncoder;
 import com.group.hassocial.service.RegistrationService;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
-public class WebSecurity extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final RegistrationService registrationService;
 
-    public WebSecurity(PasswordEncoder passwordEncoder, RegistrationService registrationService) {
+    public WebSecurityConfig(PasswordEncoder passwordEncoder, RegistrationService registrationService) {
         this.passwordEncoder = passwordEncoder;
         this.registrationService = registrationService;
     }
@@ -26,8 +22,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/user/register", "/api/user/**", "/api/user/authenticate", "/api/user/*", "/matches/**", "/profile")
+                .antMatchers("/api/user/register", "/api/user/**", "/api/user/authenticate/**", "/api/user/*", "/matches/**", "/profile")
                 .permitAll()
+                .antMatchers("/api/user/authenticate?token=dd426d70-80b9-4e31-a13c-500285788760").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
