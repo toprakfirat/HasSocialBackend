@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface UserInterestRepository extends JpaRepository<UserInterest, Integer> {
 
-    @Query("select i from UserInterest i where i.UserID = ?1")
+        @Query("SELECT i FROM UserInterest i WHERE i.UserID = ?1")
     List<UserInterest> findByUserID(int userId);
 }

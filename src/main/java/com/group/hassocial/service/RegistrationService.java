@@ -1,11 +1,9 @@
 package com.group.hassocial.service;
 import com.group.hassocial.data.dto.UserDto;
-import com.group.hassocial.data.dto.enums.universityDomains;
 import com.group.hassocial.data.model.User;
 import com.group.hassocial.data.token.AuthenticationToken;
 import com.group.hassocial.exception.InvalidEmailDomainException;
 import com.group.hassocial.exception.UserAlreadyExistException;
-import com.group.hassocial.repository.AuthenticationTokenRepository;
 import com.group.hassocial.repository.UserRepository;
 import com.group.hassocial.security.EmailValidator;
 import com.group.hassocial.security.PasswordEncoder;
@@ -15,9 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,19 +26,23 @@ public class RegistrationService implements IRegistrationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationTokenService authenticationTokenService;
-    private final EmailSender emailSender;
+    private final EmailSenderService emailSenderService;
     private final EmailValidator emailValidator;
+    private final UniversityService universityService;
 
     @Value("${authentication.link}")
     private String authenticationLink;
 
-    public RegistrationService(EmailSender emailSender, UserRepository userRepository, PasswordEncoder passwordEncoder,
-                               AuthenticationTokenService authenticationTokenService, EmailValidator emailValidator) {
-        this.emailSender = emailSender;
+    private final String userCreationTime = Instant.now().atZone(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE).replace("-", "/");
+
+    public RegistrationService(EmailSenderService emailSenderService, UserRepository userRepository, PasswordEncoder passwordEncoder,
+                               AuthenticationTokenService authenticationTokenService, EmailValidator emailValidator, UniversityService universityService) {
+        this.emailSenderService = emailSenderService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationTokenService = authenticationTokenService;
         this.emailValidator = emailValidator;
+        this.universityService = universityService;
     }
 
 
@@ -52,7 +55,7 @@ public class RegistrationService implements IRegistrationService {
             if (!notAuthenticatedUser.isIsVerified()) {
                 String newToken = UUID.randomUUID().toString();
                 authenticationTokenService.saveAuthenticationToken(notAuthenticatedUser, newToken);
-                emailSender.sendEmail(userDto.getEmail(), emailSender.buildEmail(notAuthenticatedUser.getFullName(), authenticationLink + newToken));
+                emailSenderService.sendEmail(userDto.getEmail(), emailSenderService.buildEmail(notAuthenticatedUser.getFullName(), authenticationLink + newToken));
 
                 return newToken;
             }
@@ -65,15 +68,17 @@ public class RegistrationService implements IRegistrationService {
         final User user = User.builder()
                 .Email(userDto.getEmail())
                 .PasswordHash(passwordEncoder.encodePassword(userDto))
-                .CreateDate(User.datePatternOrganizer("2022/05/18"))
-                .UniversityID(1)
+                .CreateDate(User.datePatternOrganizer(userCreationTime))
+                .UniversityID(universityService.extractUniversityIdFromDomain(userDto.getEmail()))
+                .FullName("Baris")
                 .build();
-            userRepository.save(user);
 
+            userRepository.save(user);
         String token = UUID.randomUUID().toString();
         authenticationTokenService.saveAuthenticationToken(user, token);
 
-        emailSender.sendEmail(userDto.getEmail(), emailSender.buildEmail(userDto.getFullName(), authenticationLink + token));
+        emailSenderService.sendEmail(userDto.getEmail(), emailSenderService.buildEmail(user.getFullName(), authenticationLink + token));
+
         return token;
     }
 
@@ -83,7 +88,9 @@ public class RegistrationService implements IRegistrationService {
     }
 
     public void makeUserVerified(String email) {
-        userRepository.verifyUser(email);
+        Optional<User> userRepositoryByEmail = userRepository.findByEmail(email);
+        userRepositoryByEmail.ifPresent(user -> user.setIsVerified(true));
+        //userRepository.verifyUser(email);
     }
 
     @Transactional

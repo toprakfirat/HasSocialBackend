@@ -115,7 +115,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
         </dependency>
-
         <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -155,6 +154,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
         <!-- test -->
 
     </dependencies>

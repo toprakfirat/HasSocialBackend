@@ -35,6 +35,8 @@ public class AuthenticationTokenService implements IAuthenticationService {
 
     @Override
     public void setAuthenticationTime(String token) {
-        authenticationTokenRepository.updateAuthenticationTime(token, LocalDateTime.now());
+        //authenticationTokenRepository.updateAuthenticationTime(token, LocalDateTime.now());
+        Optional<AuthenticationToken> authenticationToken = authenticationTokenRepository.findByToken(token);
+        authenticationToken.ifPresent(auth -> auth.setConfirmedAt(LocalDateTime.now()));
     }
 }

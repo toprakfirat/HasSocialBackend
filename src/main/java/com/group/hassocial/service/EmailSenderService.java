@@ -1,5 +1,6 @@
 package com.group.hassocial.service;
 
+import com.group.hassocial.security.config.EmailConfig;
 import com.group.hassocial.service.interfaces.IEmailSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
@@ -10,35 +11,42 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
 @Service
-public class EmailSender implements IEmailSender {
+public class EmailSenderService implements IEmailSender {
 
     @Value("${spring.mail.username}")
     private String from;
 
-    private final JavaMailSender mailSender;
+    private final EmailConfig emailConfig;
     private final static Logger logger = LoggerFactory.getLogger(IEmailSender.class);
 
-    public EmailSender(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailSenderService(JavaMailSender mailSender, EmailConfig emailConfig) {
+        this.emailConfig = emailConfig;
     }
 
     @Override
     @Async
-    public void sendEmail(String to, String email) {
+    public void sendEmail(String to, String msg) {
         try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            //JavaMailSender mailSender = emailConfig.getJavaMailSender();
+            //MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessage mimeMessage = new MimeMessage(emailConfig.getJavaMailSender());
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            helper.setText(email, true);
+            helper.setText(msg, true);
             helper.setTo(to);
             helper.setSubject("Confirm your email");
             helper.setFrom(from);
-            mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            logger.error("Failed to send email for: " + email + "\n" + e);
-            throw new IllegalArgumentException("Failed to send email for: " + email);
+            Transport transport = emailConfig.getJavaMailSender().getTransport("smtps");
+            transport.connect(EmailConfig.javaMailProperties().getHost(), from, EmailConfig.javaMailProperties().getPassword());
+            //mailSender.send(mimeMessage);
+            transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+            transport.close();
+        } catch (MessagingException ex) {
+            logger.error("Failed to send email for: " + msg + "\n" + ex);
+            throw new IllegalArgumentException("Failed to send email for: " + msg);
         }
     }
 
