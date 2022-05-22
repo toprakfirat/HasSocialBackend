@@ -3,6 +3,7 @@ import com.group.hassocial.data.dto.UserDto;
 import com.group.hassocial.exception.InvalidEmailDomainException;
 import com.group.hassocial.exception.UserAlreadyExistException;
 import com.group.hassocial.service.RegistrationService;
+import com.group.hassocial.service.SignUpService;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,11 @@ import java.text.ParseException;
 public class RegistrationController {
 
     private final RegistrationService registrationService;
+    private final SignUpService signUpService;
 
-
-    public RegistrationController(RegistrationService registrationService) {
+    public RegistrationController(RegistrationService registrationService, SignUpService signUpService) {
         this.registrationService = registrationService;
+        this.signUpService = signUpService;
     }
 
     @PostMapping("/register")
@@ -36,7 +38,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestBody UserDto userDto) {
-        return "";
+    public String signup(@RequestBody UserDto userDto) throws ParseException{
+        return signUpService.signUp(userDto);
     }
 }
