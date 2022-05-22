@@ -17,6 +17,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -70,7 +72,6 @@ public class RegistrationService implements IRegistrationService {
                 .PasswordHash(passwordEncoder.encodePassword(userDto))
                 .CreateDate(User.datePatternOrganizer(userCreationTime))
                 .UniversityID(universityService.extractUniversityIdFromDomain(userDto.getEmail()))
-                .FullName("Baris")
                 .build();
 
             userRepository.save(user);
@@ -111,6 +112,8 @@ public class RegistrationService implements IRegistrationService {
         authenticationTokenService.setAuthenticationTime(token);
         makeUserVerified(confirmToken.get().getUser().getEmail());
 
+        //TODO: here the user will come back to app to finalize the sign-up.
         return String.format("Hey %s, your email is authenticated", confirmToken.get().getUser().getFullName());
     }
+
 }
