@@ -37,7 +37,7 @@ public class User {
     private Date BirthDate;
 
     @Column
-    private String AvatarImageID;
+    private int AvatarImageID;
 
     @Column
     private boolean IsVerified;
@@ -55,6 +55,9 @@ public class User {
 
     @Column
     private boolean Gender;
+
+    @Column
+    private int Orientation;
 
     public static java.sql.Date datePatternOrganizer(String anyDate) throws ParseException {
         Date date = new SimpleDateFormat(DATE_PATTERN).parse(anyDate);

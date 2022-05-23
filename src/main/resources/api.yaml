@@ -49,6 +49,52 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExceptionResponse'
 
+  /profile/change-avatar:
+    post:
+      summary: Profile
+      operationId: changeAvatar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeAvatarRequest'
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
+  /profile/modify-gallery:
+    post:
+      summary: Profile
+      operationId: modifyGallery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyGalleryRequest'
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
   /matches:
     get:
       summary: Matches
@@ -134,7 +180,7 @@ components:
         - swipeType
       properties:
         targetId:
-          type: number
+          type: integer
           description: "ID of Swiped User"
           example: 1000
         swipeType:
@@ -151,6 +197,26 @@ components:
               type: boolean
               example: true
               description: "Whether the user is matched with the swiped user"
+
+    ChangeAvatarRequest:
+      type: object
+      required:
+        - imageId
+      properties:
+        imageId:
+          type: integer
+
+    ModifyGalleryRequest:
+      type: object
+      properties:
+        uploadedPhotos:
+          type: array
+          items:
+            type: string
+        deletedPhotos:
+          type: array
+          items:
+            type: integer
 
     Response:
       type: object
@@ -187,6 +253,9 @@ components:
         - birthDate
         - avatarImageId
         - isVerified
+        - universityId
+        - gender
+        - orientation
       properties:
         userId:
           type: integer
@@ -202,11 +271,17 @@ components:
           example: "mehmetyilmaz@stu.khas.edu.tr"
         birthDate:
           type: string
-          format: date
+          format: "YYYY-MM-DD"
         avatarImageId:
           type: string
         isVerified:
           type: boolean
+        universityId:
+          type: integer
+        gender:
+          type: boolean
+        orientation:
+          type: integer
 
     BaseInterest:
       type: object
