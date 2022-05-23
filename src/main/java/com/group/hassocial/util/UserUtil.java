@@ -15,4 +15,9 @@ public class UserUtil {
         final BaseUser baseUser = modelMapperUtil.modelMapper.map(user, BaseUser.class);
         return baseUser;
     }
+
+    public User baseUserToUser(final BaseUser baseUser) {
+        final User user = modelMapperUtil.modelMapper.map(baseUser, User.class);
+        return user;
+    }
 }

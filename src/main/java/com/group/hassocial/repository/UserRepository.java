@@ -4,10 +4,10 @@ import com.group.hassocial.data.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +32,16 @@ public interface UserRepository extends JpaRepository<User, Integer>{
                    "WHERE token IS NOT NULL AND confirmedAt IS NOT NULL AND\n" +
                    "expiresAt > DATEADD(hh, -24, GETDATE()) ORDER BY confirmedAt DESC", nativeQuery = true)
     String findAuthenticatedUserEmailByToken();
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE USERS SET FullName = ?1, BirthDate = ?2, Gender = ?3, Orientation = ?4 WHERE UserID = ?5", nativeQuery = true)
+    void updateUser(String fullName, Date birthDate, Boolean gender, Integer orientation, Integer id);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE USERS SET AvatarImageID = ?1 WHERE UserID = ?2", nativeQuery = true)
+    void updateAvatar(Integer avatarImageId, Integer id);
+
+
 }

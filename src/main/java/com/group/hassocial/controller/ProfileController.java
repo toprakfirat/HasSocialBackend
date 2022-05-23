@@ -2,13 +2,19 @@ package com.group.hassocial.controller;
 
 import com.group.hassocial.service.ProfileService;
 import com.hassocial.swaggergen.controller.ProfileApi;
+import com.hassocial.swaggergen.model.ChangeAvatarRequest;
 import com.hassocial.swaggergen.model.ChangeSettingsRequest;
+import com.hassocial.swaggergen.model.ModifyGalleryRequest;
 import com.hassocial.swaggergen.model.ProfileResponse;
 import com.hassocial.swaggergen.model.Response;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 public class ProfileController implements ProfileApi {
@@ -27,6 +33,20 @@ public class ProfileController implements ProfileApi {
     public ResponseEntity<Response> changeSettings(final ChangeSettingsRequest request) {
 
         final Response response = profileService.changeSettings(request);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Response> changeAvatar(final ChangeAvatarRequest changeAvatarRequest) {
+
+        final Response response = profileService.changeAvatar(changeAvatarRequest);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Response> modifyGallery(final ModifyGalleryRequest modifyGalleryRequest) {
+
+        final Response response = profileService.modifyGallery(modifyGalleryRequest);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
