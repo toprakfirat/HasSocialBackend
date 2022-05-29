@@ -29,7 +29,7 @@ public class UserDto implements Serializable {
 
     private int userId;
 
-    private Date birthDate;
+    private String birthDate;
 
     private String avatarImageId;
 
