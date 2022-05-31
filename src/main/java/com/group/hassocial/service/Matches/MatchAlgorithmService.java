@@ -23,9 +23,18 @@ public class MatchAlgorithmService {
 
         //TODO Get UserId from session constant after it's implementation
         final int id = 1;
+        final int orientation = 2;
         final boolean gender = false;
 
-        final List<User> users = userRepository.findMatches(id, gender).get();
+        final List<User> users;
+
+        if (orientation == 2) {
+            users = userRepository.findMatchesFromBothGender(id).get();
+        }
+        else {
+            users = userRepository.findMatches(id, gender).get();
+        }
+
         final List<BaseUser> baseUsers = new ArrayList<>();
 
         users.forEach(user -> {

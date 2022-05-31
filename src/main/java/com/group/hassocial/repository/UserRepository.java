@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,9 @@ public interface UserRepository extends JpaRepository<User, Integer>{
     @Query(value = "SELECT * FROM USERS WHERE Gender = ?2 AND UserID not in (SELECT UserID FROM SWIPES WHERE TargetID = ?1) UNION SELECT * FROM USERS WHERE Gender = ?2 AND UserID in (SELECT UserID FROM SWIPES WHERE TargetID = ?1 AND IsAccepted = 1)", nativeQuery = true)
     Optional<List<User>> findMatches(Integer userID, Boolean gender);
 
+    @Query(value = "SELECT * FROM USERS WHERE UserID not in (SELECT UserID FROM SWIPES WHERE TargetID = 1) UNION SELECT * FROM USERS WHERE UserID in (SELECT UserID FROM SWIPES WHERE TargetID = 1 AND IsAccepted = 1)SELECT * FROM USERS WHERE UserID not in (SELECT UserID FROM SWIPES WHERE TargetID = 1) UNION SELECT * FROM USERS WHERE UserID in (SELECT UserID FROM SWIPES WHERE TargetID = 1 AND IsAccepted = 1)", nativeQuery = true)
+    Optional<List<User>> findMatchesFromBothGender(Integer userID);
+
     @Query(value = "SELECT TOP 1 USERS.Email\n" +
                    "FROM USERS INNER JOIN AUTHENTICATION_TOKEN ON USERS.UserID = AUTHENTICATION_TOKEN.UserID\n" +
                    "WHERE token IS NOT NULL AND confirmedAt IS NOT NULL AND\n" +
@@ -35,8 +39,8 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE USERS SET FullName = ?1, BirthDate = ?2, Gender = ?3, Orientation = ?4 WHERE UserID = ?5", nativeQuery = true)
-    void updateUser(String fullName, Date birthDate, Boolean gender, Integer orientation, Integer id);
+    @Query(value = "UPDATE USERS SET FullName = ?1, BirthDate = ?2, Gender = ?3, Orientation = ?4, Description = ?5 WHERE UserID = ?6", nativeQuery = true)
+    void updateUser(String fullName, Date birthDate, Boolean gender, Integer orientation, String desciption, Integer id);
 
     @Transactional
     @Modifying

@@ -3,6 +3,7 @@ package com.group.hassocial.controller;
 import com.group.hassocial.service.ProfileService;
 import com.hassocial.swaggergen.controller.ProfileApi;
 import com.hassocial.swaggergen.model.ChangeAvatarRequest;
+import com.hassocial.swaggergen.model.ChangeInterestsRequest;
 import com.hassocial.swaggergen.model.ChangeSettingsRequest;
 import com.hassocial.swaggergen.model.ModifyGalleryRequest;
 import com.hassocial.swaggergen.model.ProfileResponse;
@@ -40,6 +41,13 @@ public class ProfileController implements ProfileApi {
     public ResponseEntity<Response> changeAvatar(final ChangeAvatarRequest changeAvatarRequest) {
 
         final Response response = profileService.changeAvatar(changeAvatarRequest);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Response> changeInterests(final ChangeInterestsRequest changeInterestsRequest) {
+
+        final Response response = profileService.changeInterests(changeInterestsRequest);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

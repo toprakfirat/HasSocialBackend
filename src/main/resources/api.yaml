@@ -49,6 +49,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExceptionResponse'
 
+  /profile/change-interests:
+    post:
+      summary: Profile
+      operationId: changeInterests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeInterestsRequest'
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
   /profile/change-avatar:
     post:
       summary: Profile
@@ -161,6 +184,16 @@ components:
         user:
           $ref: '#/components/schemas/BaseUser'
 
+    ChangeInterestsRequest:
+      type: object
+      required:
+        - interests
+      properties:
+        interests:
+          type: array
+          items:
+            type: string
+
     MatchesResponse:
       type: object
       required:
@@ -256,6 +289,7 @@ components:
         - universityId
         - gender
         - orientation
+        - description
       properties:
         userId:
           type: integer
@@ -282,6 +316,8 @@ components:
           type: boolean
         orientation:
           type: integer
+        description:
+          type: string
 
     BaseInterest:
       type: object

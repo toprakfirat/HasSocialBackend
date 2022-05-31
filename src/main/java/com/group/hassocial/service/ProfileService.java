@@ -1,5 +1,6 @@
 package com.group.hassocial.service;
 
+import com.group.hassocial.data.model.Interest;
 import com.group.hassocial.data.model.Photo;
 import com.group.hassocial.data.model.User;
 import com.group.hassocial.repository.GalleryRepository;
@@ -7,6 +8,7 @@ import com.group.hassocial.repository.UserRepository;
 import com.group.hassocial.util.UserUtil;
 import com.hassocial.swaggergen.model.BaseUser;
 import com.hassocial.swaggergen.model.ChangeAvatarRequest;
+import com.hassocial.swaggergen.model.ChangeInterestsRequest;
 import com.hassocial.swaggergen.model.ChangeSettingsRequest;
 import com.hassocial.swaggergen.model.ModifyGalleryRequest;
 import com.hassocial.swaggergen.model.ProfileResponse;
@@ -65,6 +67,7 @@ public class ProfileService {
         String birthDate = user.getBirthDate();
         Boolean gender = user.getGender();
         Integer orientation = user.getOrientation();
+        String description = user.getDescription();
 
         if (!Objects.isNull(requestedUser.getFullName()) && !requestedUser.getFullName().equals(user.getFullName())) {
             fullName = requestedUser.getFullName();
@@ -78,10 +81,13 @@ public class ProfileService {
         if (!Objects.isNull(requestedUser.getOrientation()) && !requestedUser.getOrientation().equals(user.getOrientation())) {
             orientation = requestedUser.getOrientation();
         }
+        if (!Objects.isNull(requestedUser.getDescription()) && !requestedUser.getDescription().equals(user.getDescription())) {
+            description = requestedUser.getDescription();
+        }
 
         final User updatedUser = userUtil.baseUserToUser(user);
 
-        userRepository.updateUser(fullName, new SimpleDateFormat(DATE_FORMAT).parse(birthDate), gender, orientation, id);
+        userRepository.updateUser(fullName, new SimpleDateFormat(DATE_FORMAT).parse(birthDate), gender, orientation, description, id);
 
         final Response response = new Response();
         response.setResult(Result.OK);
@@ -103,6 +109,18 @@ public class ProfileService {
         final Response response = new Response();
         response.setResult(Result.OK);
 
+        return response;
+    }
+
+    public Response changeInterests(final ChangeInterestsRequest changeInterestsRequest) {
+
+        //TODO Get UserId from session constant after it's implementation
+        final int id = 1;
+
+        interestsService.setUserInterests(id, changeInterestsRequest.getInterests());
+
+        final Response response = new Response();
+        response.setResult(Result.OK);
         return response;
     }
 
