@@ -136,6 +136,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExceptionResponse'
 
+  /matches/profile:
+    post:
+      summary: Profile
+      operationId: getMatchProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchProfileRequest'
+      responses:
+        '200':
+          description: Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchProfileResponse'
+        default:
+          description: Exception Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+
   /matches/swipe:
     post:
       summary: Matches
@@ -175,6 +198,30 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/BaseInterest'
+
+    MatchProfileRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+
+    MatchProfileResponse:
+      type: object
+      required:
+        - user
+        - interests
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - properties:
+            user:
+              $ref: '#/components/schemas/BaseUser'
+            interests:
+              type: array
+              items:
+                $ref: '#/components/schemas/BaseInterest'
+
 
     ChangeSettingsRequest:
       type: object
