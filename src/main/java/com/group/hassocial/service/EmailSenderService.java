@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
 @Service
@@ -22,31 +21,27 @@ public class EmailSenderService implements IEmailSender {
 
     private final EmailConfig emailConfig;
     private final static Logger logger = LoggerFactory.getLogger(IEmailSender.class);
+    private final JavaMailSender javaMailSender;
 
-    public EmailSenderService(JavaMailSender mailSender, EmailConfig emailConfig) {
+    public EmailSenderService(JavaMailSender javaMailSender, EmailConfig emailConfig) {
         this.emailConfig = emailConfig;
+        this.javaMailSender = javaMailSender;
     }
 
     @Override
     @Async
     public void sendEmail(String to, String msg) {
         try {
-            //JavaMailSender mailSender = emailConfig.getJavaMailSender();
-            //MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessage mimeMessage = new MimeMessage(emailConfig.getJavaMailSender());
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             helper.setText(msg, true);
             helper.setTo(to);
             helper.setSubject("Confirm your email");
             helper.setFrom(from);
-            Transport transport = emailConfig.getJavaMailSender().getTransport("smtps");
-            transport.connect(EmailConfig.javaMailProperties().getHost(), from, EmailConfig.javaMailProperties().getPassword());
-            //mailSender.send(mimeMessage);
-            transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
-            transport.close();
+            javaMailSender.send(mimeMessage);
         } catch (MessagingException ex) {
-            logger.error("Failed to send email for: " + msg + "\n" + ex);
-            throw new IllegalArgumentException("Failed to send email for: " + msg);
+            logger.error("Failed to send email for: " + to + "\n" + ex);
+            throw new IllegalArgumentException("Failed to send email for: " + to);
         }
     }
 
@@ -118,4 +113,5 @@ public class EmailSenderService implements IEmailSender {
                 "\n" +
                 "</div></div>";
     }
+
 }
