@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -38,5 +39,32 @@ public class InterestsService {
         } );
 
         return userInterests;
+    }
+
+    public void setUserInterests(final int userId, final List<String> interests) {
+
+        final List<Interest> interestsData = interestRepository.findAll();
+        final HashMap<String, Integer> interestMap = new HashMap<>();
+        interestsData.stream().forEach(interest -> {
+            interestMap.put(interest.getInterestName(), interest.getInterestID());
+        });
+
+        final List<BaseInterest> userInterests = getUserInterests(userId);
+        final List<String> oldInterests = new ArrayList<>();
+
+        userInterests.stream().forEach(ui -> {
+            oldInterests.add(ui.getInterestName());
+
+            if (!interests.contains(ui.getInterestName())) {
+            userInterestRepository.deleteByUserIdAndInterestId(userId, ui.getInterestId()); }}
+            );
+
+        interests.stream().forEach(ui -> {
+            if (!oldInterests.contains(ui)){
+                final UserInterest userInterest = new UserInterest();
+                userInterest.setInterestID(interestMap.get(ui));
+                userInterest.setUserID(userId);
+                userInterestRepository.save(userInterest); }
+        });
     }
 }

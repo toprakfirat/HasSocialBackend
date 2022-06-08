@@ -27,6 +27,7 @@ public class SignUpService implements ISignUpService {
             authenticatedUser.get().setFullName(userDto.getFullName());
             authenticatedUser.get().setGender(userDto.isGender());
             authenticatedUser.get().setBirthDate(datePatternOrganizer(userDto.getBirthDate().toString()));
+            authenticatedUser.get().setAvatarImageID(1);
             userRepository.save(authenticatedUser.get());
         }
         return String.format("Hey %s, you are fully signed in!", userDto.getFullName());
